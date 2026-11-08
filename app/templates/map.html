@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+<div class="page-layout">
+    
+    <aside class="sidebar">
+        <h3>Filtres Carte</h3>
+        
+        <div class="filter-group">
+            <label>Indicateur :</label>
+            <select id="indicatorSelect">
+                <option value="SST">Température (SST)</option>
+                <option value="SSS">Salinité (SSS)</option>
+                <option value="Chl-a">Chlorophylle (Chl-a)</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>Zone Géographique :</label>
+            <select id="zoneSelect">
+                <option value="europe">Europe (Global)</option>
+                <option value="med">Méditerranée</option>
+                <option value="manche">Manche / Mer du Nord</option>
+                <option value="atl">Atlantique (G. Gascogne)</option>
+            </select>
+
+            <div style="margin-top: 15px;">
+                <button id="favBtn" onclick="toggleFavorite()" style="
+                    width: 100%; padding: 10px; background-color: #e74c3c; color: white; 
+                    border: none; border-radius: 4px; cursor: pointer; font-weight: bold; 
+                    display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s;">
+                    <i class="fa-solid fa-heart"></i> <span>Ajouter aux favoris</span>
+                </button>
+                <div id="msgBox" style="font-size: 0.8em; color: #bdc3c7; text-align: center; margin-top: 5px; min-height: 15px;"></div>
+            </div>
+        </div>
+
+    <div class="filter-group">
+        <label>Période :</label>
+    
+        <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-size: 0.8em; color: #aaa;">Du :</label>
+            <select id="mapStart">
+                <option disabled selected>Chargement...</option>
+            </select>
+
+            <label style="font-size: 0.8em; color: #aaa;">Au :</label>
+            <select id="mapEnd">
+                <option disabled selected>Chargement...</option>
+            </select>
+        </div>
+    </div>
+
+        <div class="filter-group">
+            <label>Mode de visualisation :</label>
+            <div class="radio-group">
+                <label><input type="radio" name="viewMode" value="heat" checked> Carte d'intensité</label>
+                <label><input type="radio" name="viewMode" value="cluster"> Carte de points</label>
+            </div>
+        </div>
+
+        <button class="btn-apply" onclick="updateMapData()">Mettre à jour la carte</button>
+
+        <div class="export-buttons" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px;">
+            <label style="display:block; margin-bottom:10px; font-weight:bold;">Exporter :</label>
+            <button class="btn-export csv" onclick="exportData('csv', 'map')"><i class="fa-solid fa-file-csv"></i> CSV</button>
+            <button class="btn-export pdf" onclick="exportData('pdf', 'map')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+        </div>
+    </aside>
+
+    <main class="content-area" style="position: relative;">
+        <div id="loader" class="loading-overlay" style="display: none;">
+            <div class="spinner"></div>
+            <div class="loading-text">Chargement des données...</div>
+        </div>
+        <div id="map-container" style="width: 100%; height: 100%;">
+            <div id="map" style="width: 100%; height: 100%; z-index: 1;"></div>
+        </div>
+    </main>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // On remplace la fonction updateLegend de main.js par celle-ci
+        // Elle crée une légende compacte, style règle graduée
+        window.updateLegend = function(indicator, gradientCfg, maxVal) {
+            // Supprime l'ancienne légende si elle existe
+            if (legendControl) mapInstance.removeControl(legendControl);
+
+            legendControl = L.control({position: 'bottomright'});
+            legendControl.onAdd = function (map) {
+                const div = L.DomUtil.create('div', 'info legend');
+                
+                // --- DESIGN DU CONTENEUR ---
+                div.style.background = "rgba(255, 255, 255, 0.96)"; 
+                div.style.padding = "8px 12px"; 
+                div.style.borderRadius = "4px"; 
+                div.style.boxShadow = "0 2px 5px rgba(0,0,0,0.3)";
+                div.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif";
+                div.style.border = "1px solid #ccc";
+                div.style.lineHeight = "1";
+                div.style.minWidth = "180px"; // Largeur compacte fixe
+                
+                // --- TITRE ET UNITÉ ---
+                let title = "Valeur";
+                let unit = "";
+                if (indicator.includes('SST')) { title = "Température"; unit = "°C"; }
+                else if (indicator.includes('SSS')) { title = "Salinité"; unit = "PSU"; }
+                else if (indicator.includes('Chl')) { title = "Chlorophylle"; unit = "mg/m³"; }
+                
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
+                        <span style="font-weight:700; font-size:11px; color:#333; text-transform:uppercase;">${title}</span>
+                        <span style="font-size:10px; color:#666; font-weight:500;">(${unit})</span>
+                    </div>
+                `;
+                
+                // --- PRÉPARATION DU DÉGRADÉ ---
+                const sortedStops = Object.entries(gradientCfg).sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]));
+                let gradientCSS = "linear-gradient(to right";
+                for (const [pos, color] of sortedStops) { 
+                    gradientCSS += `, ${color} ${parseFloat(pos)*100}%`; 
+                }
+                gradientCSS += ")";
+                
+                // --- BARRE DE COULEUR (Fine et Clean) ---
+                div.innerHTML += `
+                    <div style="
+                        height: 6px; 
+                        width: 100%;
+                        background: ${gradientCSS}; 
+                        border: 1px solid rgba(0,0,0,0.2);
+                        border-radius: 2px;
+                        margin-bottom: 2px;">
+                    </div>
+                `;
+
+                // --- GRADUATIONS (Règle précise) ---
+                // On divise en 5 points précis : 0, 25%, 50%, 75%, 100%
+                let steps = [0, 0.25, 0.5, 0.75, 1.0];
+                let ticksHTML = `<div style="display: flex; justify-content: space-between; margin-top: 0;">`;
+                
+                steps.forEach(step => {
+                    // Calcul de la valeur avec 1 décimale max (ex: 7.5 ou 15)
+                    let val = parseFloat((maxVal * step).toFixed(1));
+                    
+                    // Création du tick (trait) et du chiffre
+                    // Margin négative pour centrer parfaitement le texte sous le trait
+                    ticksHTML += `
+                        <div style="display:flex; flex-direction:column; align-items:center; width:20px; margin-left:-10px; margin-right:-10px;">
+                            <div style="width:1px; height:4px; background:#333; margin-bottom:2px;"></div>
+                            <span style="font-size: 9px; color: #222; font-weight:600; font-family:'Roboto Mono', monospace;">${val}</span>
+                        </div>
+                    `;
+                });
+                ticksHTML += `</div>`;
+
+                div.innerHTML += ticksHTML;
+                return div;
+            };
+            
+            // Ajout à la carte
+            legendControl.addTo(mapInstance);
+        };
+    });
+</script>
+{% endblock %}

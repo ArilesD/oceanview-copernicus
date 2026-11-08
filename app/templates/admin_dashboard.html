@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="home-wrapper" style="text-align: center;"> 
+    <div class="hero-text">
+        <h1 id="hero-title">Panneau d'Administration</h1>
+        <p id="hero-desc">Gérez les utilisateurs et consultez l'activité du système.</p>
+    </div>
+
+    <div id="admin-menu" class="menu-grid">
+        
+        <div class="menu-card" onclick="showSection('users-section')">
+            <i class="fa-solid fa-users-gear"></i>
+            <h2>Utilisateurs</h2>
+            <p style="color: white; opacity: 0.8;">Créer, modifier, supprimer</p>
+        </div>
+
+        <div class="menu-card" onclick="showSection('logs-section')">
+            <i class="fa-solid fa-list-check"></i>
+            <h2>Logs Système</h2>
+            <p style="color: white; opacity: 0.8;">Historique des connexions</p>
+        </div>
+
+        <div class="menu-card" onclick="showSection('reviews-section')">
+            <i class="fa-solid fa-star"></i>
+            <h2>Avis Utilisateurs</h2>
+            <p style="color: white; opacity: 0.8;">Lire les retours et notes</p>
+        </div>
+
+    </div>
+
+    <div id="users-section" class="content-section" style="display: none; max-width: 1200px; margin: 0 auto;">
+        
+        <div style="text-align: left; margin-bottom: 10px;">
+            <button class="btn-back" onclick="showMenu()"><i class="fa-solid fa-arrow-left"></i> Retour au menu</button>
+        </div>
+
+        <div class="admin-header" style="position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; height: 40px;">
+            <h2 style="color: white; margin: 0;">Liste des Comptes</h2>
+            <button onclick="openUserModal()" class="btn-action add" style="position: absolute; right: 0;">
+                <i class="fa-solid fa-plus"></i> Nouvel Utilisateur
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.is_admin %}
+                                <span class="badge admin">Admin</span>
+                            {% else %}
+                                <span class="badge user">User</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn-icon edit" data-id="{{ user.id }}" data-name="{{ user.username }}" data-email="{{ user.email }}" data-admin="{{ user.is_admin }}"
+                                    onclick="editUser(this.dataset.id, this.dataset.name, this.dataset.email, this.dataset.admin)" aria-label="Modifier l’utilisateur">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            
+                            {% if user.id != session.get('user_id') %}
+                            <form method="post" action="{{ url_for('main.delete_user_route', user_id=user.id) }}" style="display: inline;"
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn-icon delete" aria-label="Supprimer l’utilisateur">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="logs-section" class="content-section" style="display: none; max-width: 1200px; margin: 0 auto;">
+        
+        <div style="text-align: left; margin-bottom: 10px;">
+            <button class="btn-back" onclick="showMenu()"><i class="fa-solid fa-arrow-left"></i> Retour au menu</button>
+        </div>
+        
+        <h2 style="color: white; margin-bottom: 20px;">Historique Récent</h2>
+        
+        <div class="table-container">
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Cible</th>
+                        <th>Détail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.date }}</td>
+                        <td style="font-weight: bold; color: #4facfe;">{{ log.user }}</td>
+                        <td><span class="badge" style="background: #666;">{{ log.action }}</span></td>
+                        <td>{{ log.target }}</td>
+                        <td>{{ log.detail }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="reviews-section" class="content-section" style="display: none; max-width: 1200px; margin: 0 auto;">
+        <div style="text-align: left; margin-bottom: 10px;">
+            <button class="btn-back" onclick="showMenu()"><i class="fa-solid fa-arrow-left"></i> Retour au menu</button>
+        </div>
+        
+        <h2 style="color: white; margin-bottom: 20px;">Retours de la Communauté</h2>
+        
+        <div class="table-container">
+            {% if reviews %}
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">Date</th>
+                        <th style="width: 20%;">Utilisateur</th>
+                        <th style="width: 15%;">Note</th>
+                        <th style="width: 50%;">Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rev in reviews %}
+                    <tr>
+                        <td style="font-size: 0.9em; color: #666;">{{ rev.Date_Avis }}</td>
+                        <td style="font-weight: bold; color: #2c3e50;">{{ rev.Nom_Utilisateur }}</td>
+                        <td>
+                            <div style="color: #f1c40f;">
+                                {% for i in range(rev.Note) %}<i class="fas fa-star"></i>{% endfor %}
+                                <span style="color:#ccc; font-size:0.8em; margin-left:5px;">({{ rev.Note }}/5)</span>
+                            </div>
+                        </td>
+                        <td style="font-style: italic; color: #555;">"{{ rev.Message }}"</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <div style="padding: 40px; text-align: center; color: #666; background: rgba(0,0,0,0.02);">
+                    <i class="far fa-comment-dots" style="font-size: 2rem; margin-bottom: 10px; color: #ccc;"></i>
+                    <p>Aucun avis pour le moment.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUserModal()">&times;</span>
+        <h2 id="modalTitle" style="color: #333; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 0;">Ajouter un utilisateur</h2>
+        
+        <form id="userForm" action="{{ url_for('main.manage_user') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" id="userId" name="user_id">
+            
+            <div class="form-group">
+                <label>Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" id="password" name="password">
+            </div>
+            
+            <div class="form-group" style="display:flex; gap:10px; align-items: center; margin-top: 15px;">
+                <input type="checkbox" id="isAdmin" name="is_admin" style="width:auto; transform: scale(1.2);">
+                <label for="isAdmin" style="margin:0; color:#333; cursor: pointer; font-weight: bold;">Accès Administrateur</label>
+            </div>
+            
+            <button type="submit" class="btn-apply" style="margin-top: 20px; width: 100%;">Enregistrer</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* MODIFICATION ICI : Passage en Flexbox pour centrer facilement */
+    .menu-grid {
+        display: flex;
+        justify-content: center; /* Centre horizontalement */
+        flex-wrap: wrap; /* Permet le retour à la ligne si écran petit */
+        max-width: 1200px;
+        margin: 40px auto;
+        gap: 30px;
+        padding: 0 20px;
+    }
+    
+    .menu-card {
+        cursor: pointer;
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        padding: 30px;
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        color: #2c3e50; 
+        
+        /* MODIFICATION ICI : Taille fixe ou flexible pour uniformiser */
+        flex: 0 1 300px; /* Base de 300px, peut rétrécir */
+        min-width: 250px;
+    }
+    .menu-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    }
+    .menu-card i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: white; 
+        text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .menu-card h2 { margin: 0 0 5px 0; color: #2c3e50; }
+    .menu-card p { margin: 0; color: #34495e !important; opacity: 0.8; font-size: 0.9em; }
+
+    .table-container {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .logs-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #333;
+    }
+    .logs-table th {
+        background: #2c3e50;
+        color: white;
+        padding: 15px;
+        text-align: left;
+    }
+    .logs-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+    }
+    .logs-table tr:hover { background-color: #f8f9fa; }
+
+
+    .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.8em; font-weight: bold; }
+    .badge.admin { background-color: #e74c3c; }
+    .badge.user { background-color: #2ecc71; }
+
+    .btn-back {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.4);
+        padding: 8px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.4); }
+
+    .btn-action.add {
+        background: #27ae60;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .btn-icon {
+        border: none;
+        width: 30px; height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        margin: 0 2px;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: white;
+    }
+    .btn-icon.edit { background-color: #f1c40f; }
+    .btn-icon.delete { background-color: #e74c3c; }
+
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 30px;
+        border-radius: 10px;
+        width: 400px;
+        position: relative;
+        animation: slideDown 0.3s;
+    }
+    @keyframes slideDown { from {transform: translateY(-50px); opacity:0;} to {transform: translateY(0); opacity:1;} }
+    .close { position: absolute; right: 20px; top: 15px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa; }
+    .close:hover { color: #333; }
+    
+    .form-group { margin-bottom: 15px; text-align: left; }
+    .form-group label { display: block; margin-bottom: 5px; color: #555; font-weight: 600; }
+    .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="password"] {
+        width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;
+    }
+</style>
+
+<script>
+    const heroTitle = document.getElementById('hero-title');
+    const heroDesc = document.getElementById('hero-desc');
+
+    function showSection(sectionId) {
+        document.getElementById('admin-menu').style.display = 'none';
+        document.querySelectorAll('.content-section').forEach(el => el.style.display = 'none');
+        
+        document.getElementById(sectionId).style.display = 'block';
+
+        if (sectionId === 'users-section') {
+            heroTitle.innerText = "Gestion des Utilisateurs";
+            heroDesc.innerText = "Ajoutez, modifiez ou supprimez des comptes membres et administrateurs.";
+        } else if (sectionId === 'logs-section') {
+            heroTitle.innerText = "Logs Système";
+            heroDesc.innerText = "Consultez l'historique complet des connexions et des actions.";
+        } else if (sectionId === 'reviews-section') {
+            heroTitle.innerText = "Avis Utilisateurs";
+            heroDesc.innerText = "Consultez les notes et commentaires laissés par la communauté.";
+        }
+    }
+
+    function showMenu() {
+        // MODIFICATION ICI : On rétablit le display en 'flex' pour garder le centrage
+        document.getElementById('admin-menu').style.display = 'flex';
+        document.querySelectorAll('.content-section').forEach(el => el.style.display = 'none');
+        heroTitle.innerText = "Panneau d'Administration";
+        heroDesc.innerText = "Gérez les utilisateurs et consultez l'activité du système.";
+    }
+
+    var modal = document.getElementById("userModal");
+    
+    function openUserModal() {
+        document.getElementById('modalTitle').innerText = "Ajouter un utilisateur";
+        document.getElementById('userId').value = ""; 
+        document.getElementById('username').value = "";
+        document.getElementById('email').value = "";
+        document.getElementById('password').value = "";
+        document.getElementById('password').placeholder = "Mot de passe requis";
+        document.getElementById('isAdmin').checked = false;
+        modal.style.display = "block";
+    }
+
+    function editUser(id, name, email, isAdmin) {
+        document.getElementById('modalTitle').innerText = "Modifier l'utilisateur";
+        document.getElementById('userId').value = id;
+        document.getElementById('username').value = name;
+        document.getElementById('email').value = email;
+        document.getElementById('password').value = "";
+        document.getElementById('password').placeholder = "Laisser vide pour ne pas changer";
+        
+        let isAdm = (isAdmin === 'True' || isAdmin === 'true' || isAdmin === true);
+        document.getElementById('isAdmin').checked = isAdm;
+        
+        modal.style.display = "block";
+    }
+
+    function closeUserModal() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+{% endblock %} 

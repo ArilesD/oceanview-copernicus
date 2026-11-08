@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="about-wrapper">
+    
+    <div class="about-header">
+        <h1>À propos d'OcéanView</h1>
+        <p class="subtitle">Plateforme d'analyse et de visualisation des données océanographiques.</p>
+    </div>
+
+    <div class="about-card">
+    <h2><i class="fas fa-project-diagram"></i> Le Projet OcéanView</h2>
+    <p>
+        <strong>OcéanView</strong> est une application océanographique développée dans le cadre de la SAE 3.01. 
+        Elle agrège et visualise des indicateurs environnementaux pour analyser la santé des océans en Europe.
+    </p>
+    <p>
+        L'application offre un tableau de bord complet permettant de suivre :
+    </p>
+    <ul class="feature-list">
+        <li>
+            <i class="fas fa-thermometer-half"></i> 
+            <span><strong>Température (SST) :</strong> Température de surface de la mer.</span>
+        </li>
+        <li>
+            <i class="fas fa-water"></i> 
+            <span><strong>Salinité (SSS) :</strong> Salinité de surface.</span>
+        </li>
+        <li>
+            <i class="fas fa-leaf"></i> 
+            <span><strong>Chlorophylle-a (Chl-a) :</strong> Concentration en Chlorophylle-a.</span>
+        </li>
+    </ul>
+    </div>
+
+    <div class="about-grid">
+        <div class="about-card">
+            <h2><i class="fas fa-database"></i> Source des Données</h2>
+            <p>
+                Les données proviennent du programme européen 
+                <a href="https://marine.copernicus.eu/" target="_blank" style="color: #007bff; text-decoration: underline;">
+                    <strong>Copernicus Marine Service</strong> 
+                </a>
+                pour récupérer :
+            </p>
+            <ul>
+                <li>Les archives.</li>
+                <li>Les données en temps réel.</li>
+            </ul>
+        </div>
+
+        <div class="about-card">
+    <h2><i class="fas fa-code"></i> Architecture & Stack Technique</h2>
+    
+    <div style="margin-bottom: 15px;">
+        <strong><i class="fas fa-server"></i> Backend & Data :</strong>
+        <div class="tech-tags" style="margin-top: 5px;">
+            <span class="tag python">Python</span>
+            <span class="tag python">Flask (MVC)</span>
+            <span class="tag mysql">MySQL</span>
+            <span class="tag">Pandas / Xarray</span>
+            <span class="tag">Copernicus API</span>
+        </div>
+    </div>
+
+    <div>
+        <strong><i class="fas fa-desktop"></i> Frontend & Visualisation :</strong>
+        <div class="tech-tags" style="margin-top: 5px;">
+            <span class="tag js">JavaScript</span>
+            <span class="tag leaflet">Leaflet.js (Carto)</span>
+            <span class="tag plotly">Plotly.js (Graphes)</span>
+            <span class="tag css">HTML / CSS</span>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <div class="about-card team-section">
+        <h2><i class="fas fa-users"></i> Groupe FI2C</h2>
+        <p>Ce projet a été réalisé par :</p>
+        <div class="team-grid">
+            <div class="member">
+                <div class="avatar"><i class="fas fa-user"></i></div>
+                <strong>Dadi Ariles</strong>
+                <span>Etudiant BUT Informatique</span>
+            </div>
+            <div class="member">
+                <div class="avatar"><i class="fas fa-user"></i></div>
+                <strong>Vang Leo</strong>
+                <span>Etudiant BUT Informatique</span>
+            </div>
+            <div class="member">
+                <div class="avatar"><i class="fas fa-user"></i></div>
+                <strong>Arulnathan Kajan</strong>
+                <span>Etudiant BUT Informatique</span>
+            </div>
+            <div class="member">
+                <div class="avatar"><i class="fas fa-user"></i></div>
+                <strong>Haroussi Idriss</strong>
+                <span>Etudiant BUT Informatique</span>
+            </div>
+            <div class="member">
+                <div class="avatar"><i class="fas fa-user"></i></div>
+                <strong>Kuevi Ekoue</strong>
+                <span>Etudiant BUT Informatique</span>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+{% endblock %}

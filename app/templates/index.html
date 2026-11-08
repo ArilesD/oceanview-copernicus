@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+ 
+{% block content %}
+<div class="home-wrapper">
+    <div class="hero-text" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <img src="{{ url_for('static', filename='images/logo2.png') }}"
+             alt="Logo OcéanView"
+             style="height: 120px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(0, 206, 201, 0.4));">
+       
+        <h1 style="margin: 0;">OcéanView</h1>
+        <p>Analyse des indicateurs océaniques (SST, SSS, Chl-a)</p>
+    </div>
+ 
+    <div class="menu-grid">
+        <a href="/map" class="menu-card"><i class="fa-solid fa-map-location-dot"></i><h2>Carte</h2></a>
+        <a href="/charts" class="menu-card"><i class="fa-solid fa-chart-line"></i><h2>Graphiques</h2></a>
+        <a href="/favorites" class="menu-card"><i class="fa-solid fa-star"></i><h2>Favoris</h2></a>
+        <a href="/about" class="menu-card"><i class="fa-solid fa-info-circle"></i><h2>À propos</h2></a>
+    </div>
+</div>
+{% endblock %}

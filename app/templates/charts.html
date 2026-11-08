@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-layout">
+    <aside class="sidebar" style="overflow-y: auto;"> 
+        <h3 style="margin-bottom: 10px;">Graphiques</h3> 
+        
+        <div class="tab-buttons" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
+            <button onclick="switchTab('weekly')" id="btn-week" style="padding: 10px; border: none; color: white; cursor: pointer; font-size: 1rem; background: #3498db; width: 100%; border-radius: 4px;">
+                <i class="fa-solid fa-chart-line"></i> Évolution
+            </button>
+            <button onclick="switchTab('correlation')" id="btn-corr" style="padding: 10px; border: none; color: white; cursor: pointer; font-size: 1rem; background: #95a5a6; width: 100%; border-radius: 4px;">
+                <i class="fa-solid fa-code-compare"></i> Comparaison
+            </button>
+            <button onclick="switchTab('distribution')" id="btn-dist" style="padding: 10px; border: none; color: white; cursor: pointer; font-size: 1rem; background: #95a5a6; width: 100%; border-radius: 4px;">
+                <i class="fa-solid fa-chart-bar"></i> Histogramme
+            </button>
+        </div>
+
+        <div id="controls-weekly">
+            <div class="filter-group" style="margin-bottom: 10px;">
+                <label style="margin-bottom: 5px;">Indicateur :</label>
+                <select id="indWeekly" style="width:100%; margin-bottom:10px;">
+                    <option value="SST" selected>Température (SST)</option>
+                    <option value="SSS">Salinité (SSS)</option>
+                    <option value="Chl">Chlorophylle (Chl)</option>
+                </select>
+
+                <label style="margin-bottom: 5px;">Période :</label>
+                <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:10px;">
+                    <label style="font-size: 0.8em; color: #aaa;">Du :</label>
+                    <select id="startWeek" style="width:100%;"><option disabled selected>Chargement...</option></select>
+                    <label style="font-size: 0.8em; color: #aaa;">Au :</label>
+                    <select id="endWeek" style="width:100%;"><option disabled selected>Chargement...</option></select>
+                </div>
+                
+                <button class="btn-apply" onclick="updateWeeklyChart()" style="width:100%; margin-top: 5px;">Voir l'évolution</button>
+            </div>
+        </div>
+
+        <div id="controls-correlation" style="display: none;">
+            <div class="filter-group" style="margin-bottom: 10px;">
+                <label style="font-size:0.9em; margin-bottom: 5px;">Var 1 (Gauche) :</label>
+                <select id="ind1" style="width:100%; margin-bottom:5px;">
+                    <option value="SST" selected>Température (SST)</option>
+                    <option value="SSS">Salinité (SSS)</option>
+                    <option value="Chl">Chlorophylle (Chl)</option>
+                </select>
+                
+                <label style="font-size:0.9em; margin-bottom: 5px;">Var 2 (Droite) :</label>
+                <select id="ind2" style="width:100%; margin-bottom:10px;">
+                    <option value="SST">Température (SST)</option>
+                    <option value="SSS">Salinité (SSS)</option>
+                    <option value="Chl" selected>Chlorophylle (Chl)</option>
+                </select>
+                
+                <hr style="border:0; border-top:1px solid #555; margin:5px 0;">
+                
+                <label style="margin-bottom: 5px;">Période :</label>
+                <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:10px;">
+                    <label style="font-size: 0.8em; color: #aaa;">Du :</label>
+                    <select id="startCorr" style="width:100%;"><option disabled selected>Chargement...</option></select>
+                    <label style="font-size: 0.8em; color: #aaa;">Au :</label>
+                    <select id="endCorr" style="width:100%;"><option disabled selected>Chargement...</option></select>
+                </div>
+
+                <button class="btn-apply" onclick="updateCorrelationChart()" style="width:100%; margin-top: 5px;">Comparer</button>
+            </div>
+        </div>
+
+        <div id="controls-distribution" style="display: none;">
+            <div class="filter-group" style="margin-bottom: 10px;">
+                <label style="margin-bottom: 5px;">Indicateur :</label>
+                <select id="indDist" style="width:100%; margin-bottom:10px;">
+                    <option value="SST" selected>Température (SST)</option>
+                    <option value="SSS">Salinité (SSS)</option>
+                    <option value="Chl">Chlorophylle (Chl)</option>
+                </select>
+                
+                <label style="margin-bottom: 5px;">Période :</label>
+                <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:10px;">
+                    <label style="font-size: 0.8em; color: #aaa;">Du :</label>
+                    <select id="startDist" style="width:100%;"><option disabled selected>Chargement...</option></select>
+                    <label style="font-size: 0.8em; color: #aaa;">Au :</label>
+                    <select id="endDist" style="width:100%;"><option disabled selected>Chargement...</option></select>
+                </div>
+                
+                <button class="btn-apply" onclick="updateDistributionChart()" style="width:100%; margin-top: 5px;">Voir la répartition</button>
+            </div>
+        </div>
+        
+        <div class="export-buttons" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2);">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-export csv" onclick="exportData('csv')" style="flex:1; background:#27ae60; color:white; border:none; padding:8px; cursor:pointer; border-radius:4px; font-size:0.9em;">
+                    <i class="fa-solid fa-file-csv"></i> CSV
+                </button>
+                <button class="btn-export pdf" onclick="exportData('pdf')" style="flex:1; background:#e74c3c; color:white; border:none; padding:8px; cursor:pointer; border-radius:4px; font-size:0.9em;">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="content-area" style="padding: 20px;">
+        <div id="loader" class="loading-overlay" style="display:none;">
+            <div class="spinner"></div>
+            <div class="loading-text">Analyse en cours...</div>
+        </div>
+        
+        <div id="chart-container" style="width: 100%; height: 100%; background: white; padding: 10px; border-radius: 8px; position:relative; box-sizing: border-box;">
+            <div id="mainChart" style="width: 100%; height: 100%;"></div>
+            
+            <div id="chart-legend" style="position: absolute; top: 10px; right: 10px; z-index: 10; display: none;"></div>
+        </div>
+    </main>
+</div>
+{% endblock %}
