@@ -17,7 +17,7 @@ OcéanView est une application web d’exploration de données de surface. Elle 
 
 ## Lancer en local
 
-Installe Python 3.12 et MySQL 8.4. La carte et les graphiques chargent leurs bibliothèques et leurs fonds depuis Internet.
+Prépare Python 3.12 ou 3.14 et démarre MySQL 8.4. La carte et les graphiques chargent leurs bibliothèques et le fond de carte depuis Internet.
 
 Crée une base MySQL dédiée avec ton compte d’administration. Dans les commandes ci-dessous, remplace `mot-de-passe-local-a-choisir` par le mot de passe du nouveau compte MySQL local.
 
@@ -33,7 +33,6 @@ Depuis la racine du dépôt, crée un environnement virtuel et le fichier de con
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
 New-Item -ItemType Directory -Force instance
 Copy-Item config.example.py instance/config.py
 ```
@@ -47,7 +46,17 @@ mkdir -p instance
 cp config.example.py instance/config.py
 ```
 
-Renseigne ton mot de passe MySQL dans `instance/config.py`, puis installe les dépendances et initialise les données.
+Renseigne ton mot de passe MySQL dans `instance/config.py`, puis installe les dépendances, initialise les données et démarre l’application.
+
+**Windows PowerShell**
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m flask --app run init-demo
+.\.venv\Scripts\python.exe run.py
+```
+
+**macOS ou Linux**
 
 ```bash
 python -m pip install -r requirements.txt
@@ -55,7 +64,14 @@ python -m flask --app run init-demo
 python run.py
 ```
 
-Ouvre [OcéanView sur ton ordinateur](http://127.0.0.1:5001) et crée un compte via **Inscription**. Pour tester l’administration, lance `python -m flask --app run init-demo --admin-email admin@example.test`. La commande te demande de choisir le mot de passe de ce compte.
+Ouvre [OcéanView sur ton ordinateur](http://127.0.0.1:5001) et crée un compte via **Inscription**. Connecte-toi pour accéder à la carte et aux graphiques.
+
+### Reproduire les aperçus
+
+- Dans **Carte**, choisis **Température (SST)**, **Europe (Global)** et **Carte de points**. Garde la période du 1er janvier au 1er décembre 2025 et clique sur **Mettre à jour la carte**. Les 192 mesures de température sont regroupées sur la carte selon le zoom.
+- Dans **Graphiques**, choisis **Évolution** et **Température (SST)** sur la même période. Clique sur **Voir l’évolution** pour afficher les 12 valeurs de la démo.
+
+Pour tester l’administration, ajoute `--admin-email admin@example.test` à la commande `init-demo`. L’application te demande de choisir le mot de passe de ce compte.
 
 ## Lire le code
 
