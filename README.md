@@ -1,5 +1,23 @@
 # OcéanView - Explorer les données marines de Copernicus
 
+## Télécharger et lancer
+
+1. [Télécharge le ZIP complet](https://github.com/ArilesD/oceanview-copernicus/archive/refs/heads/main.zip).
+2. Dans l’Explorateur Windows, fais **Extraire tout**, puis ouvre le dossier extrait.
+3. Installe [Python 3.14](https://www.python.org/downloads/) si besoin, en cochant **Add python.exe to PATH**. Double-clique ensuite sur **LANCER.cmd**.
+
+Le lancement prépare MySQL dans le dossier du projet, génère les 576 mesures fictives décrites ci-dessous et ouvre le site. Crée un compte dans **Inscription** avec huit caractères minimum pour le mot de passe, puis connecte-toi pour ouvrir la carte et les graphiques.
+
+Garde la fenêtre de lancement ouverte pendant l’utilisation. Appuie sur **Entrée** dans cette fenêtre pour arrêter le projet. La première préparation des applications Python installe les bibliothèques depuis Internet. Les ouvertures suivantes réutilisent l’installation du dossier.
+
+### Première préparation de MySQL
+
+Sous Windows 64 bits, le lanceur utilise MySQL 8.4 si son dossier est indiqué dans **MYSQL_HOME** ou s’il est installé dans son emplacement habituel. Sinon, il télécharge automatiquement l’archive officielle de MySQL 8.4.13 (environ 268 Mio), la vérifie et l’extrait dans **.local/outils/**. Prévois environ 1 Go d’espace libre. Une base dédiée et des identifiants locaux sont créés dans **.local/mysql/**.
+
+Si MySQL signale une bibliothèque Windows manquante, installe le [Microsoft Visual C++ Redistributable x64](https://aka.ms/vs/17/release/vc_redist.x64.exe), puis relance le projet. [Téléchargements officiels MySQL](https://dev.mysql.com/downloads/mysql/8.4.html) · [Installation MySQL sur Windows](https://dev.mysql.com/doc/refman/8.4/en/windows-install-archive.html)
+
+Sous macOS ou Linux, suis la section **Lancer en local** pour préparer ta propre base MySQL.
+
 OcéanView est une application web d’exploration de données de surface. Elle associe une carte Leaflet à des graphiques Plotly pour suivre la température de surface (SST), la salinité de surface (SSS) et la chlorophylle-a.
 
 - **Projet universitaire** - L’équipe a utilisé des données de surface issues de [Copernicus Marine](https://marine.copernicus.eu/) sur la période 2024-2025.

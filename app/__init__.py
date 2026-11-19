@@ -20,6 +20,7 @@ def create_app():
         DB_USER='oceanview',
         DB_PASSWORD='',
         SESSION_COOKIE_SAMESITE='Lax',
+        SESSION_COOKIE_NAME='oceanview_session',
     )
     web_app.config.from_pyfile('config.py', silent=True)
     web_app.config.from_prefixed_env(prefix='OCEANVIEW', loads=str)

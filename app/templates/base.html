@@ -60,6 +60,9 @@
     </p>
     
     <div class="main-container">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <p class="message-session {{ category }}" role="{{ 'alert' if category == 'danger' else 'status' }}">{{ message }}</p>
+        {% endfor %}
         {% block content %}{% endblock %}
     </div>
     
