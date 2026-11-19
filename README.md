@@ -1,5 +1,18 @@
 # OcéanView - Explorer les données marines de Copernicus
 
+OcéanView est une application web d’exploration de données de surface. Elle associe une carte Leaflet à des graphiques Plotly pour suivre la température de surface (SST), la salinité de surface (SSS) et la chlorophylle-a.
+
+- **Projet universitaire** - L’équipe a utilisé des données de surface issues de [Copernicus Marine](https://marine.copernicus.eu/) sur la période 2024-2025.
+- **Démo de ce dépôt** - La commande d’initialisation génère 576 mesures fictives sur 16 positions et 12 dates. Elles servent à tester l’application et les requêtes.
+
+## Aperçu du projet
+
+![Enregistrement de la version universitaire avec ses mesures historiques Copernicus. Le téléchargement de ce dépôt prépare 576 mesures fictives pour tester les mêmes fonctions.](docs/presentation.gif)
+
+Enregistrement de la version universitaire avec ses mesures historiques Copernicus. Le téléchargement de ce dépôt prépare 576 mesures fictives pour tester les mêmes fonctions.
+
+[Voir la vidéo en grand format](docs/presentation.mp4) · [Mon parcours et mes autres projets](https://github.com/ArilesD)
+
 ## Télécharger et lancer
 
 1. [Télécharge le ZIP complet](https://github.com/ArilesD/oceanview-copernicus/archive/refs/heads/main.zip).
@@ -18,10 +31,6 @@ Si MySQL signale une bibliothèque Windows manquante, installe le [Microsoft Vis
 
 Sous macOS ou Linux, suis la section **Lancer en local** pour préparer ta propre base MySQL.
 
-OcéanView est une application web d’exploration de données de surface. Elle associe une carte Leaflet à des graphiques Plotly pour suivre la température de surface (SST), la salinité de surface (SSS) et la chlorophylle-a.
-
-- **Projet universitaire** - L’équipe a utilisé des données de surface issues de [Copernicus Marine](https://marine.copernicus.eu/) sur la période 2024-2025.
-- **Démo de ce dépôt** - La commande d’initialisation génère 576 mesures fictives sur 16 positions et 12 dates. Elles servent à tester l’application et les requêtes.
 
 ![Évolution de la température avec les données fictives de la démonstration](docs/graphique-demo.jpg)
 
