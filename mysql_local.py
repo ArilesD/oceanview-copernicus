@@ -67,7 +67,7 @@ def trouver_mysql(local):
 
 
 @contextmanager
-def base_locale(project, local):
+def base_locale(local):
     folder = local / "mysql"
     folder.mkdir(exist_ok=True)
     config = folder / "comptes.json"
