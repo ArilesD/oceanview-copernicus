@@ -16,7 +16,7 @@ Enregistrement de la version universitaire avec ses mesures historiques Copernic
 ## Télécharger et lancer
 
 1. [Télécharge le ZIP complet](https://github.com/ArilesD/oceanview-copernicus/archive/refs/heads/main.zip).
-2. Dans l’Explorateur Windows, fais **Extraire tout**, puis ouvre le dossier extrait.
+2. Dans l’Explorateur de fichiers, fais **Extraire tout**, puis ouvre le dossier extrait.
 3. Installe [Python 3.14](https://www.python.org/downloads/) si besoin, en cochant **Add python.exe to PATH**. Double-clique ensuite sur **LANCER.cmd**.
 
 Le lancement prépare MySQL dans le dossier du projet, génère les 576 mesures fictives décrites ci-dessous et ouvre le site. Crée un compte dans **Inscription** avec huit caractères minimum pour le mot de passe, puis connecte-toi pour ouvrir la carte et les graphiques.
@@ -25,11 +25,9 @@ Garde la fenêtre de lancement ouverte pendant l’utilisation. Appuie sur **Ent
 
 ### Première préparation de MySQL
 
-Sous Windows 64 bits, le lanceur utilise MySQL 8.4 si son dossier est indiqué dans **MYSQL_HOME** ou s’il est installé dans son emplacement habituel. Sinon, il télécharge automatiquement l’archive officielle de MySQL 8.4.13 (environ 268 Mio), la vérifie et l’extrait dans **.local/outils/**. Prévois environ 1 Go d’espace libre. Une base dédiée et des identifiants locaux sont créés dans **.local/mysql/**.
+Le lanceur utilise MySQL 8.4 si son dossier est indiqué dans **MYSQL_HOME** ou s’il est installé dans son emplacement habituel. Sinon, il télécharge automatiquement l’archive officielle de MySQL 8.4.13 (environ 268 Mio), la vérifie et l’extrait dans **.local/outils/**. Prévois environ 1 Go d’espace libre. Une base dédiée et des identifiants locaux sont créés dans **.local/mysql/**.
 
 Si MySQL signale une bibliothèque Windows manquante, installe le [Microsoft Visual C++ Redistributable x64](https://aka.ms/vs/17/release/vc_redist.x64.exe), puis relance le projet. [Téléchargements officiels MySQL](https://dev.mysql.com/downloads/mysql/8.4.html) · [Installation MySQL sur Windows](https://dev.mysql.com/doc/refman/8.4/en/windows-install-archive.html)
-
-Sous macOS ou Linux, suis la section **Lancer en local** pour préparer ta propre base MySQL.
 
 
 ![Évolution de la température avec les données fictives de la démonstration](docs/graphique-demo.jpg)
@@ -56,7 +54,7 @@ GRANT ALL PRIVILEGES ON oceanview_demo.* TO 'oceanview'@'127.0.0.1';
 
 Depuis la racine du dépôt, crée un environnement virtuel et le fichier de configuration local.
 
-**Windows PowerShell**
+**PowerShell**
 
 ```powershell
 python -m venv .venv
@@ -64,31 +62,14 @@ New-Item -ItemType Directory -Force instance
 Copy-Item config.example.py instance/config.py
 ```
 
-**macOS ou Linux**
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-mkdir -p instance
-cp config.example.py instance/config.py
-```
-
 Renseigne ton mot de passe MySQL dans `instance/config.py`, puis installe les dépendances, initialise les données et démarre l’application.
 
-**Windows PowerShell**
+**PowerShell**
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m flask --app run init-demo
 .\.venv\Scripts\python.exe run.py
-```
-
-**macOS ou Linux**
-
-```bash
-python -m pip install -r requirements.txt
-python -m flask --app run init-demo
-python run.py
 ```
 
 Ouvre [OcéanView sur ton ordinateur](http://127.0.0.1:5001) et crée un compte via **Inscription**. Connecte-toi pour accéder à la carte et aux graphiques.
