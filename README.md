@@ -11,7 +11,7 @@ OcéanView est une application web d’exploration de données de surface. Elle 
 
 Enregistrement de la version universitaire avec ses mesures historiques Copernicus. Le téléchargement de ce dépôt prépare 576 mesures fictives pour tester les mêmes fonctions.
 
-[Voir la vidéo en grand format](docs/presentation.mp4) · [Mon parcours et mes autres projets](https://github.com/ArilesD)
+[Voir la capture en grand format](docs/apercu.png) · [Voir la vidéo en grand format](docs/presentation.mp4) · [Mon parcours et mes autres projets](https://github.com/ArilesD)
 
 ## Télécharger et lancer
 
