@@ -4,7 +4,7 @@ Projet universitaire réalisé en équipe, avec des tâches partagées entre le 
 
 OcéanView permet de :
 - Filtrer des mesures de température de surface, de salinité et de chlorophylle-a sur une carte.
-- Comparer les mesures dans des graphiques.
+- Suivre l’évolution d’un indicateur, comparer deux indicateurs et visualiser la répartition des mesures dans des graphiques.
 - Créer un compte local et enregistrer des sélections en favoris.
 
 **Outils :** Python, Flask, MySQL, Leaflet et Plotly.
