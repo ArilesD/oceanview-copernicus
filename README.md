@@ -15,8 +15,6 @@ OcéanView permet de :
 
 L’application utilise les mesures historiques [Copernicus Marine](https://marine.copernicus.eu/) de 2024-2025 du projet d’origine, également visibles dans la vidéo.
 
-[Image en grand format](docs/apercu.png) · [Voir la vidéo](docs/presentation.mp4)
-
 ## Télécharger et lancer
 
 1. Installe [Python 3.14](https://www.python.org/downloads/) si besoin, en cochant **Add python.exe to PATH**.
@@ -42,5 +40,3 @@ La carte et les graphiques nécessitent Internet.
 | `app/templates/` et `app/static/` | Interface, carte et graphiques. |
 | `donnees.py` et `donnees.json` | Téléchargement et provenance des mesures originales. |
 | `app/schema.sql` | Tables des comptes et favoris de ton installation. |
-
-Fond de carte © OpenStreetMap France et [contributeurs OpenStreetMap](https://www.openstreetmap.org/copyright).
