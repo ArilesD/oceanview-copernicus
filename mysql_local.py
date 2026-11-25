@@ -1,11 +1,13 @@
 """MySQL local isolé pour la version publique d’OcéanView."""
 
 from contextlib import contextmanager
+import gzip
 import hashlib
 import json
 import os
 from pathlib import Path
 import secrets
+import shutil
 import socket
 import subprocess
 from tempfile import TemporaryDirectory
@@ -14,6 +16,8 @@ from urllib.request import urlopen
 from zipfile import ZipFile
 
 import mysql.connector
+
+from donnees import telecharger
 
 VERSION = "8.4.13"
 ARCHIVE = f"mysql-{VERSION}-winx64"
@@ -32,7 +36,7 @@ def trouver_mysql(local):
         if (folder / "bin/mysqld.exe").is_file():
             return folder.resolve()
     if os.name != "nt":
-        raise RuntimeError("Pour ce lancement automatique, utilise Windows 64 bits. Sous macOS/Linux, suis le guide MySQL du README.")
+        raise RuntimeError("Ce lancement nécessite Windows 64 bits.")
     if not os.environ.get("PROCESSOR_ARCHITECTURE", "").upper().endswith("64"):
         raise RuntimeError("Le téléchargement MySQL nécessite Windows 64 bits.")
     tools = local / "outils"
@@ -64,6 +68,54 @@ def trouver_mysql(local):
             raise RuntimeError("Le programme MySQL est absent de l’archive.")
         source.replace(tools / ARCHIVE)
     return tools / ARCHIVE
+
+
+def importer_donnees(root, binary_folder, port, password, folder):
+    marker = folder / "import-original-termine.json"
+    source = json.loads((Path(__file__).parent / "donnees.json").read_text(encoding="utf-8"))
+    if marker.is_file() and json.loads(marker.read_text(encoding="utf-8")).get("sha256") == source["sha256"]:
+        with root.cursor() as cursor:
+            cursor.execute("SELECT ID_Mesure FROM oceanview_original.mesure LIMIT 1")
+            if cursor.fetchone() is not None:
+                return
+        raise RuntimeError("La base originale a été modifiée ou vidée. Consulte .local/mysql/mysql.log.")
+    archive = telecharger()
+    print("Import des mesures historiques Copernicus. Cette première préparation peut prendre plusieurs minutes.", flush=True)
+    with root.cursor() as cursor:
+        # Seule la base de cette installation isolée est reconstruite après un import interrompu.
+        cursor.execute("DROP DATABASE IF EXISTS oceanview_original")
+        cursor.execute("CREATE DATABASE oceanview_original CHARACTER SET utf8mb4")
+    options = folder / "import.cnf"
+    options.write_text(f"[client]\nuser=root\npassword={password}\n", encoding="ascii")
+    try:
+        with (folder / "import.log").open("ab") as log, gzip.open(archive, "rb") as source_sql:
+            with subprocess.Popen(
+                [str(binary_folder / "bin/mysql.exe"), "--defaults-extra-file=import.cnf",
+                 "--host=127.0.0.1", f"--port={port}", "--max-allowed-packet=64M",
+                 "--default-character-set=utf8mb4", "--database=oceanview_original"],
+                stdin=subprocess.PIPE, stdout=log, stderr=log, cwd=folder,
+                creationflags=subprocess.CREATE_NO_WINDOW,
+            ) as importer:
+                try:
+                    with importer.stdin as stream:
+                        shutil.copyfileobj(source_sql, stream, length=1024 * 1024)
+                        stream.write(b"\n")
+                        stream.write((Path(__file__).parent / "app/schema.sql").read_bytes())
+                except BrokenPipeError:
+                    importer.wait()
+                    raise RuntimeError("L’import des données a échoué. Consulte .local/mysql/import.log, puis relance LANCER.cmd.") from None
+                if importer.wait():
+                    raise RuntimeError("L’import des données a échoué. Consulte .local/mysql/import.log, puis relance LANCER.cmd.")
+    finally:
+        options.unlink(missing_ok=True)
+    with root.cursor(dictionary=True) as cursor:
+        cursor.execute("SELECT COUNT(*) AS mesures, MIN(Jour_Opti) AS debut, MAX(Jour_Opti) AS fin FROM oceanview_original.mesure")
+        result = cursor.fetchone()
+        if result["mesures"] != source["mesures"]:
+            raise RuntimeError("L’import ne contient pas toutes les mesures originales. Consulte .local/mysql/import.log, puis relance LANCER.cmd.")
+    result["sha256"] = source["sha256"]
+    marker.write_text(json.dumps(result, default=str, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Données originales prêtes : {result['mesures']} mesures.", flush=True)
 
 
 @contextmanager
@@ -118,13 +170,14 @@ def base_locale(local):
             raise RuntimeError(f"MySQL ne répond pas. Consulte {log_path}.")
         initialization.unlink(missing_ok=True)
         with root.cursor() as cursor:
-            cursor.execute("CREATE DATABASE IF NOT EXISTS oceanview_demo CHARACTER SET utf8mb4")
+            cursor.execute("CREATE DATABASE IF NOT EXISTS oceanview_original CHARACTER SET utf8mb4")
             cursor.execute("CREATE USER IF NOT EXISTS 'oceanview'@'127.0.0.1' IDENTIFIED BY %s", (passwords["app"],))
-            cursor.execute("GRANT ALL PRIVILEGES ON oceanview_demo.* TO 'oceanview'@'127.0.0.1'")
+            cursor.execute("GRANT SELECT, INSERT, UPDATE, DELETE ON oceanview_original.* TO 'oceanview'@'127.0.0.1'")
+        importer_donnees(root, binary_folder, port, passwords["root"], folder)
         yield {
             "OCEANVIEW_DB_HOST": "127.0.0.1",
             "OCEANVIEW_DB_PORT": str(port),
-            "OCEANVIEW_DB_NAME": "oceanview_demo",
+            "OCEANVIEW_DB_NAME": "oceanview_original",
             "OCEANVIEW_DB_USER": "oceanview",
             "OCEANVIEW_DB_PASSWORD": passwords["app"],
             "OCEANVIEW_SECRET_KEY": passwords["session"],

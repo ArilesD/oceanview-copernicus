@@ -13,7 +13,7 @@ OcéanView permet de :
 
 ![Carte des mesures historiques Copernicus dans la version universitaire d’OcéanView.](docs/presentation.gif)
 
-La vidéo montre les mesures [Copernicus Marine](https://marine.copernicus.eu/) de 2024-2025 utilisées dans le projet d’origine. Ce dépôt fournit des **données fictives** pour lancer l’application.
+L’application utilise les mesures historiques [Copernicus Marine](https://marine.copernicus.eu/) de 2024-2025 du projet d’origine, également visibles dans la vidéo.
 
 [Image en grand format](docs/apercu.png) · [Voir la vidéo](docs/presentation.mp4)
 
@@ -25,7 +25,9 @@ La vidéo montre les mesures [Copernicus Marine](https://marine.copernicus.eu/) 
 
 Le premier lancement nécessite Internet pour installer les bibliothèques. Garde la fenêtre de lancement ouverte pendant l’utilisation et appuie sur **Entrée** dans cette fenêtre pour arrêter le projet.
 
-Le lancement prépare MySQL et les données de test, puis ouvre le site. Crée un compte via **Inscription** avec un mot de passe d’au moins huit caractères, puis connecte-toi.
+Le lancement installe MySQL si nécessaire, télécharge et importe les mesures originales, puis ouvre le site. Cette première préparation peut prendre plusieurs minutes. Les ouvertures suivantes réutilisent la base installée.
+
+Crée ton compte via **Inscription** avec un mot de passe d’au moins huit caractères, puis connecte-toi. Les comptes sont propres à ton installation.
 
 La carte et les graphiques nécessitent Internet.
 
@@ -38,6 +40,7 @@ La carte et les graphiques nécessitent Internet.
 | `app/controllers/` | Pages et données demandées par la carte et les graphiques. |
 | `app/models/` | Requêtes et accès à MySQL. |
 | `app/templates/` et `app/static/` | Interface, carte et graphiques. |
-| `app/schema_demo.sql` et `app/demo.py` | Structure de la base et génération des mesures fictives. |
+| `donnees.py` et `donnees.json` | Téléchargement et provenance des mesures originales. |
+| `app/schema.sql` | Tables des comptes et favoris de ton installation. |
 
 Fond de carte © OpenStreetMap France et [contributeurs OpenStreetMap](https://www.openstreetmap.org/copyright).

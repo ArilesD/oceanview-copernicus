@@ -1,0 +1,8 @@
+{
+  "fichier": "mesures-originales.sql.gz",
+  "url": "https://github.com/ArilesD/oceanview-copernicus/releases/download/donnees-originales-v1/mesures-originales.sql.gz",
+  "sha256": "252bb09f17bed9970702af564cc0e754a4b49fddb7b998425f01440e403871ac",
+  "octets": 160371536,
+  "mesures": 17421439,
+  "provenance": "Mesures historiques Copernicus 2024-2025 utilisées dans le projet universitaire. Tables variable, localisation et mesure, sans comptes utilisateurs."
+}

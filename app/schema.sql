@@ -1,25 +1,3 @@
-CREATE TABLE IF NOT EXISTS variable (
-    ID_Variable INT PRIMARY KEY,
-    Indicateurs VARCHAR(30) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS localisation (
-    ID_Localisation INT PRIMARY KEY,
-    Latitude DOUBLE NOT NULL,
-    Longitude DOUBLE NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS mesure (
-    ID_Mesure INT PRIMARY KEY,
-    ID_Variable INT NOT NULL,
-    ID_Localisation INT NOT NULL,
-    Jour_Opti DATE NOT NULL,
-    Valeur DOUBLE NOT NULL,
-    INDEX idx_mesure_variable_jour (ID_Variable, Jour_Opti),
-    FOREIGN KEY (ID_Variable) REFERENCES variable (ID_Variable),
-    FOREIGN KEY (ID_Localisation) REFERENCES localisation (ID_Localisation)
-);
-
 CREATE TABLE IF NOT EXISTS utilisateur (
     ID_Utilisateur INT AUTO_INCREMENT PRIMARY KEY,
     Nom_Utilisateur VARCHAR(80) NOT NULL,

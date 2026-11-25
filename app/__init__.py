@@ -16,7 +16,7 @@ def create_app():
         SECRET_KEY=token_hex(32),
         DB_HOST='127.0.0.1',
         DB_PORT=3306,
-        DB_NAME='oceanview_demo',
+        DB_NAME='oceanview_original',
         DB_USER='oceanview',
         DB_PASSWORD='',
         SESSION_COOKIE_SAMESITE='Lax',
@@ -43,7 +43,4 @@ def create_app():
     
     import app.models.user 
     
-    from app.demo import init_demo
-
-    web_app.cli.add_command(init_demo)
     return web_app

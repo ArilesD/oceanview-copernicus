@@ -87,8 +87,10 @@ def reuse():
 
 
 def verify():
-    assert len(json.loads(read_page("/api/available-dates", 45))) == 12
-    assert len(json.loads(read_page("/api/data?start=2025-01-01&indicator=SST&zone=europe", 45))) == 16
+    dates = json.loads(read_page("/api/available-dates", 180))
+    assert dates, "Aucune date dans la base originale."
+    values = json.loads(read_page("/api/data?start=" + dates[0] + "&indicator=SST&zone=europe", 180))
+    assert isinstance(values, list) and values, "Aucune mesure réelle sur la carte."
     print(f"{NAME} : vérification réussie.")
 
 
@@ -99,7 +101,6 @@ def serve():
     address = f"http://127.0.0.1:{PORT}"
     with context as variables:
         environment = {**os.environ, **variables, "PYTHONUTF8": "1", "PYTHONDONTWRITEBYTECODE": "1"}
-        run([str(python), "-m", "flask", "--app", "run", "init-demo"], env=environment)
         arguments = ["-m", "flask", "--app", ENTRY, "run",
                      "--host", "127.0.0.1", "--port", str(PORT)]
         with (LOCAL / "application.log").open("w", encoding="utf-8") as log:
