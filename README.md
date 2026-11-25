@@ -1,6 +1,6 @@
 # OcéanView - Exploration de données marines
 
-Projet universitaire réalisé à cinq en BUT Informatique à l’IUT de Créteil-Vitry (UPEC). Nous avons partagé les tâches entre le traitement des données et le développement de l’application.
+Projet universitaire réalisé en équipe, avec des tâches partagées entre le traitement des données et le développement de l’application.
 
 OcéanView permet de :
 - Filtrer des mesures de température de surface, de salinité et de chlorophylle-a sur une carte.
@@ -13,7 +13,7 @@ OcéanView permet de :
 
 ![Carte des mesures historiques Copernicus dans la version universitaire d’OcéanView.](docs/presentation.gif)
 
-La vidéo montre les mesures [Copernicus Marine](https://marine.copernicus.eu/) de 2024-2025 utilisées dans le projet d’origine. Ce dépôt fournit **576 mesures fictives**, sur 16 positions et 12 dates, pour tester l’application.
+La vidéo montre les mesures [Copernicus Marine](https://marine.copernicus.eu/) de 2024-2025 utilisées dans le projet d’origine. Ce dépôt fournit des **données fictives** pour lancer l’application.
 
 [Image en grand format](docs/apercu.png) · [Voir la vidéo](docs/presentation.mp4)
 
@@ -27,9 +27,7 @@ Le premier lancement nécessite Internet pour installer les bibliothèques. Gard
 
 Le lancement prépare MySQL et les données de test, puis ouvre le site. Crée un compte via **Inscription** avec un mot de passe d’au moins huit caractères, puis connecte-toi.
 
-La première préparation peut télécharger MySQL (environ 268 Mo). Prévois environ **1 Go d’espace libre**. La carte et les graphiques nécessitent Internet.
-
-Si le lancement signale une bibliothèque manquante pour MySQL, installe le [Microsoft Visual C++ Redistributable x64](https://aka.ms/vs/17/release/vc_redist.x64.exe), puis relance le projet.
+La carte et les graphiques nécessitent Internet.
 
 ## Comprendre les fichiers
 
@@ -41,7 +39,5 @@ Si le lancement signale une bibliothèque manquante pour MySQL, installe le [Mic
 | `app/models/` | Requêtes et accès à MySQL. |
 | `app/templates/` et `app/static/` | Interface, carte et graphiques. |
 | `app/schema_demo.sql` et `app/demo.py` | Structure de la base et génération des mesures fictives. |
-
-Les crédits de l’équipe figurent dans la page **À propos**. [Carte avec les mesures fictives](docs/carte-demo.jpg) · [Graphique des mesures fictives](docs/graphique-demo.jpg)
 
 Fond de carte © OpenStreetMap France et [contributeurs OpenStreetMap](https://www.openstreetmap.org/copyright).
